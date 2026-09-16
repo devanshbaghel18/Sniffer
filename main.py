@@ -68,7 +68,7 @@ def ipv4_packet(data):
     version = version_header_length >> 4
     header_length = (version_header_length & 15) * 4
     ttl, proto, src, target = struct.unpack('! 8x B B 2x 4s 4s', data [:20])
-    return version, header_length, ttl, proto, ipv4(src), ipv4(target),
+    return version, header_length, ttl, proto, ipv4(src), ipv4(target),data[header_length:] 
 
 
 #formatting the ipv4 address
@@ -84,7 +84,7 @@ def icmp_packet(data):
 
 #unpacking tcp segment
 def tcp_segment(data):
-    (src_port, dest_port, sequence, acknowledgment, offset_reserved_flags) =struct.unpack(' ! H H L L H', data[:14])
+    (src_port, dest_port, sequence, acknowledgment, offset_reserved_flags) =struct.unpack('! H H L L H', data[:14])
     offset = (offset_reserved_flags >> 12) * 4
     flag_urg = (offset_reserved_flags & 32) >> 5
     flag_ack = (offset_reserved_flags & 16) >> 4
@@ -100,11 +100,17 @@ def udp_segment(data):
     return src_port, dest_port, size, data[8:]
 
 def format_multi_line(prefix, string , size=80):
-    size=size - len(prefix)
+
+    size = size - len(prefix)
+
     if isinstance(string, bytes):
+
         string = ''.join(r'\x{:02x}'.format(byte) for byte in string)
+
         if size % 2:
+
             size -= 1
+
     return '\n'.join([prefix + line for line in textwrap.wrap(string, size)])
 
 
