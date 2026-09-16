@@ -154,7 +154,7 @@ Root privileges
 
 Clone the repository:
 
-git clone https://github.com/yourusername/packet-sniffer.git
+https://github.com/devanshbaghel18/Sniffer
 cd packet-sniffer
 
 Run:
