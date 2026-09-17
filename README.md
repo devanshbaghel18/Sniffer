@@ -1,128 +1,142 @@
-A Linux packet sniffer built in Python using raw sockets (AF_PACKET, SOCK_RAW) that captures live network traffic and manually parses packets layer by layer without using packet-analysis libraries like Scapy.
+# 🐟 WireGoldfish
 
-The project demonstrates how network packets travel through the Linux networking stack by decoding Ethernet, IPv4, TCP, UDP, and ICMP headers directly from raw bytes.
+> A Linux packet sniffer built in **Python** using **raw sockets (`AF_PACKET`, `SOCK_RAW`)** that captures live network traffic and manually parses packets layer by layer without using packet-analysis libraries like Scapy.
 
-4
-Features
+WireGoldfish demonstrates how network packets travel through the Linux networking stack by decoding **Ethernet**, **IPv4**, **TCP**, **UDP**, and **ICMP** headers directly from raw bytes using Python's `struct` module.
 
-Capture live Ethernet frames using raw sockets.
+---
 
-Parse source and destination MAC addresses.
+## Features
 
-Decode IPv4 packets.
+- Capture live Ethernet frames using Linux raw sockets.
+- Parse source and destination MAC addresses.
+- Decode IPv4 packets.
+- Extract:
+  - IP Version
+  - Header Length
+  - TTL
+  - Protocol
+  - Source IP
+  - Destination IP
+- Parse ICMP packets.
+- Parse TCP segments.
+- Decode TCP flags:
+  - URG
+  - ACK
+  - PSH
+  - RST
+  - SYN
+  - FIN
+- Parse UDP segments.
+- Display packet payloads as hexadecimal.
 
-Extract:
+---
 
-IP Version
+## How It Works
 
-Header Length
+The sniffer captures packets directly from the network interface using Linux's `AF_PACKET` socket family.
 
-TTL
+Every packet is received as raw bytes and decoded manually using Python's `struct.unpack()`.
 
-Protocol
+### Packet Flow
 
-Source IP
+```text
+Network Card
+      │
+      ▼
+AF_PACKET Raw Socket
+      │
+      ▼
+Ethernet Parser
+      │
+      ▼
+IPv4 Parser
+      │
+      ▼
+TCP / UDP / ICMP Parser
+      │
+      ▼
+Payload Decoder
+      │
+      ▼
+Terminal Output
+```
 
-Destination IP
+The parsing pipeline follows the network stack:
 
-Parse ICMP packets.
+```text
+Ethernet
+    ↓
+IPv4
+    ↓
+TCP / UDP / ICMP
+    ↓
+Payload
+```
 
-Parse TCP segments.
+---
 
-Decode TCP flags:
+## Packet Parsing
 
-URG
-
-ACK
-
-PSH
-
-RST
-
-SYN
-
-FIN
-
-Parse UDP segments.
-
-Display packet payload as hexadecimal.
-
-How It Works
-
-The sniffer captures packets directly from the network interface using Linux's AF_PACKET socket family.
-
-Each packet is decoded manually using Python's struct module.
-
-The packet decoding pipeline follows the OSI/network stack:
-
-Packet Parsing
-Ethernet Frame
+### Ethernet Frame
 
 Extracts:
 
-Destination MAC
-
-Source MAC
-
-EtherType
+- Destination MAC
+- Source MAC
+- EtherType
 
 Example:
 
+```text
 Ethernet Frame:
 Destination: 01:00:5E:00:00:FB
 Source: F2:9A:7C:85:4C:55
 Protocol: 8
-IPv4
+```
+
+### IPv4
 
 Extracts:
 
-Version
+- Version
+- Header Length
+- TTL
+- Protocol
+- Source IP
+- Destination IP
 
-Header Length
-
-TTL
-
-Protocol
-
-Source IP
-
-Destination IP
-
-TCP
+### TCP
 
 Parses:
 
-Source Port
+- Source Port
+- Destination Port
+- Sequence Number
+- Acknowledgment Number
+- TCP Flags
 
-Destination Port
-
-Sequence Number
-
-Acknowledgment Number
-
-TCP Flags
-
-UDP
+### UDP
 
 Parses:
 
-Source Port
+- Source Port
+- Destination Port
+- Length
 
-Destination Port
-
-Length
-
-ICMP
+### ICMP
 
 Parses:
 
-Type
+- Type
+- Code
+- Checksum
 
-Code
+---
 
-Checksum
+## Example Output
 
-Example Output
+```text
 Ethernet Frame:
 Destination: 01:00:5E:00:00:FB
 Source: F2:9A:7C:85:4C:55
@@ -140,103 +154,120 @@ Protocol: 8
         - Source Port: 5353
         - Destination Port: 5353
         - Length: 94
+```
 
-The packet above is an mDNS (Multicast DNS) packet commonly used for local network service discovery.
+The packet above is an **mDNS (Multicast DNS)** packet commonly used for local network service discovery.
 
-Installation
-Requirements
+---
 
-Linux
+## Installation
 
-Python 3
+### Requirements
 
-Root privileges
+- Linux
+- Python 3
+- Root privileges
 
 Clone the repository:
 
-https://github.com/devanshbaghel18/Sniffer
-cd packet-sniffer
+```bash
+git clone https://github.com/devanshbaghel18/WireGoldfish.py.git
+cd Sniffer
+```
 
 Run:
 
+```bash
 sudo python3 main.py
+```
 
-Raw sockets require administrator privileges on Linux.
+> Raw sockets require administrator privileges on Linux.
 
-Project Structure
-packet-sniffer/
-│
+---
+
+## Project Structure
+
+```text
+Sniffer/
 ├── main.py
 ├── README.md
 ├── LICENSE
 └── screenshots/
-Technologies Used
+```
 
-Python 3
+---
 
-Linux Raw Sockets (AF_PACKET)
+## Technologies Used
 
-socket
+- Python 3
+- Linux Raw Sockets (`AF_PACKET`)
+- `socket`
+- `struct`
+- `textwrap`
 
-struct
+---
 
-textwrap
+## Networking Concepts Demonstrated
 
-Networking Concepts Demonstrated
+- Raw Socket Programming
+- Ethernet Frame Parsing
+- IPv4 Header Decoding
+- TCP Header Parsing
+- UDP Header Parsing
+- ICMP Packet Parsing
+- Bitwise Operations
+- Binary Data Parsing
+- Linux Network Stack
 
-Raw Socket Programming
+---
 
-Ethernet Frame Parsing
+## Limitations
 
-IPv4 Header Decoding
+- Linux only (`AF_PACKET` is Linux-specific).
+- Requires root privileges.
+- Cannot decrypt HTTPS/TLS traffic.
+- IPv6 parsing is not yet implemented.
 
-TCP Header Parsing
+---
 
-UDP Header Parsing
+## Future Improvements
 
-ICMP Packet Parsing
+- [ ] IPv6 packet parsing
+- [ ] ARP packet decoding
+- [ ] DNS packet parsing
+- [ ] HTTP request parsing
+- [ ] Packet filtering (`--tcp`, `--udp`, `--icmp`)
+- [ ] PCAP export
+- [ ] Live traffic dashboard
+- [ ] Colorized terminal output
 
-Bitwise Operations
+---
 
-Binary Data Parsing
+## What I Learned
 
-Linux Network Stack
+Building WireGoldfish helped me understand:
 
-Limitations
+- how packets are captured before applications receive them,
+- Ethernet, IPv4, TCP, UDP, and ICMP header structures,
+- binary parsing with `struct.unpack()`,
+- bitwise operations for extracting protocol fields,
+- Linux raw socket programming,
+- and how tools like Wireshark decode packets layer by layer.
 
-Linux only (AF_PACKET is Linux-specific).
+---
 
-Requires root privileges.
+## Similar Tools
 
-Does not decrypt HTTPS/TLS traffic.
+| Tool | Purpose |
+|------|---------|
+| Wireshark | Packet capture and analysis |
+| Scapy | Packet manipulation library |
+| tcpdump | Command-line packet capture |
+| Suricata | Intrusion Detection System |
+| Snort | Rule-based IDS |
 
-Currently supports IPv4 parsing (IPv6 decoding is not yet implemented).
+---
 
-Future Improvements
-IPv6 packet parsing
-ARP packet decoding
-DNS packet parsing
-HTTP request parsing
-Packet filtering (--tcp, --udp, --icmp)
-PCAP export
-Live traffic statistics dashboard
-Colorized terminal output
-What I Learned
+## License
 
-Building this project helped me understand:
-
-how packets are captured before applications receive them,
-
-how Ethernet, IPv4, TCP, UDP, and ICMP headers are structured,
-
-binary parsing with struct.unpack,
-
-bitwise operations for extracting protocol fields,
-
-Linux raw socket programming,
-
-and how packet analyzers like Wireshark decode traffic layer by layer.
-
-License
-
-This project is licensed under the MIT License.
+This project is licensed under the **MIT License**.
