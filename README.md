@@ -1,4 +1,4 @@
-# 🐟 WireGoldfish
+# 🐟 WireGoldfish.py
 
 > A Linux packet sniffer built in **Python** using **raw sockets (`AF_PACKET`, `SOCK_RAW`)** that captures live network traffic and manually parses packets layer by layer without using packet-analysis libraries like Scapy.
 
